@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  
+  <head lang="en">
+    <meta charset="UTF-8">
+
+    <title>Stock Analysis Demo</title>
+    
+    
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/bootstrap-responsive.min.css" rel="stylesheet">
+
+    <link href="./css/site.css" rel="stylesheet">
+    <link href="./css/datepicker.css" rel="stylesheet">
+    <link rel="stylesheet" href="./js/bootstrap-dialog/css/bootstrap-dialog.min.css"/>
+    <link rel="stylesheet" href="./js/jBootsrapPage.css"/>
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+        
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/highcharts.js"></script>
+    <script src="./js/plate_stock.js"></script>
+      <style>
+        .inline li {
+            display: inline;
+        }
+        #loading-indicator {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+        }
+    </style>
+  </head>
+  
+  <body>
+  <img src="/img/loading.gif" id="loading-indicator" style="display:none" />
+  <div class="container">
+      <div class="row">
+          <div class="span3">
+            <div class="well" style="padding: 8px 0;">
+                <ul class="nav nav-list" id="plate">
+                </ul>
+            </div>
+        </div>
+          <!-- left-->
+        <div class="span9">
+            <div id="chart_jll" style="min-width: 300px; height: 400px; margin: 0 auto"></div>
+            <div>
+              <textarea id='inputTxt' cols="60" rows="4" style="min-width:400px" ></textarea>
+              <input type="button" id="btnSubmit" value="提交自选股" />
+            </div>
+        </div>
+
+      </div>
+  </div>
+
+   <script>
+       $(document).ajaxSend(function(event, request, settings) {
+            $('#loading-indicator').show();
+        });
+
+        $(document).ajaxComplete(function(event, request, settings) {
+            $('#loading-indicator').hide();
+        });
+
+          function filldata(list){
+            var opt={
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Stock Analysis Demo'
+                },
+                subtitle: {
+                    text: 'A股盈利能力分析'
+                },
+                xAxis: {
+                    type: 'category',
+                    labels: {
+                        rotation: -45,
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '盈利率'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    pointFormat: '当前盈余报酬率: <b>{point.y:.3f} </b>'
+                },
+                series: [{
+                    name: '权益净利率',
+                    data: list,
+                    dataLabels: {
+                        enabled: true,
+                        rotation: -90,
+                        color: '#FFFFFF',
+                        align: 'right',
+                        format: '{point.y:.2f}', // one decimal
+                        y: 10, // 10 pixels down from the top
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    }
+                }]
+            };
+
+            $('#chart_jll').highcharts(opt);
+            //
+          }
+
+          function fetch(arr) {
+            var stocks={"arr":arr};
+                    $.ajax({
+                        type : "POST",
+                        url : "/get",
+                        data: JSON.stringify(stocks),
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function(msg) {
+                             var list=[];
+                                var obj=msg;
+                                if(obj && obj.results){
+                                  obj.results.forEach(function(element) {
+                                    if(element.length>2){
+                                      if(element[1]!=0){
+                                       var tmp=[element[0],element[2]/element[1]];
+                                       list.push(tmp);
+                                      }
+                                    }
+                                  }, this);
+                                }
+                                filldata(list);
+                        }
+                    });
+          }
+          
+          function onPlateClick(ele){
+              var plate=$(ele).text();
+              var arr=gPlate[plate];
+              fetch(arr);
+          }
+
+          function loadPlate(){
+                var plateEle=$('#plate');
+                for (var plate in gPlate) {
+                    $("#plate").append('<li><a href="#" onclick=onPlateClick(this)><span class="tab">'+plate+'</span></a></li>');
+                }
+          }
+
+          $(function () {
+                  loadPlate();
+                  $('#btnSubmit').click(function () {
+                    var str=$('#inputTxt').val();
+                    var arr=str.split(',');
+                    if(arr.length>0)
+                      fetch(arr);
+                  });
+                   //var stocks={"arr":['600816','600705','601336','000666','600291','600643','601628','601628','601601','601601','601318','600635','000563','600783','000415','601336']};
+        });
+        </script>
+  </body>
+
+</html>
