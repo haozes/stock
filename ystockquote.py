@@ -28,6 +28,7 @@ sample usage:
 
 def __request(symbol, stat):
     url = 'http://finance.yahoo.com/d/quotes.csv?s=%s&f=%s' % (symbol, stat)
+    print(url)
     return urllib.urlopen(url).read().strip().strip('"')
 
 
@@ -38,6 +39,7 @@ def get_all(symbol):
     Returns a dictionary.
     """
     values = __request(symbol, 'l1c1va2xj1b4j4dyekjm3m4rr5p5p6s7').split(',')
+    print(values)
     data = {}
     data['price'] = values[0]
     data['change'] = values[1]
@@ -164,5 +166,5 @@ def get_historical_prices(symbol, start_date, end_date):
 
 
 #print(get_historical_prices('002230.SZ','20150510','20150515'))
-#print(get_price('002230.SZ'))
+print(get_all('002230.SZ'))
         

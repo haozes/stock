@@ -23,15 +23,25 @@ def get():
     arr=[]
     for item in stocks:
         str=item.decode('gbk').encode('utf-8')
-        if str.startswith('6'):
-            arr.append('sh'+str)
-        else:
-            arr.append('sz'+str)
-    print(arr)
+        arr.append(str)
+
+#        if str.startswith('6'):
+#            arr.append('sh'+str)
+#        else:
+#            arr.append('sz'+str)
+
     ret=parser.getResult(arr)
     #ret=parser.getResult(['sh600816','sh600705','sh601336','sz000666','sh600291','sh600643','sh601628','sh601628','sh601601','sh601601','sh601318','sh600635','sz000563','sh600783','sh000415','sz601336'])
     return jsonify(results=ret)
 
+
+@app.route('/gethist',methods=['POST'])
+def history():
+    stocks=request.json['codes']
+    start=request.json['start']
+    end=request.json['end']
+    ret=parser.getHist(stocks,start,end)
+    return jsonify(results=ret)
 
 @app.route('/js/<path:path>')
 def send_js(path):
