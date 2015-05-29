@@ -1,0 +1,93 @@
+__author__ = 'jhwang'
+
+import sqlite3
+from datetime import *
+
+import time,functools
+
+DATABASE = 'stock.db'
+
+
+def time_me(info="used"):
+  def _time_me(fn):
+    @functools.wraps(fn)
+    def _wrapper(*args, **kwargs):
+      start = time.clock()
+      fn(*args, **kwargs)
+      print("{0} {1} {2}".format(fn.__name__, info, time.clock() - start), "second")
+    return _wrapper
+  return _time_me
+
+def saveOrUpdate(code,price,date):
+    execute('insert into history(code,price,date) values (?,?,?)',[code,price,date])
+
+def select(codes,startDate,endDate):
+    sql='select * from history where code in ({0})'.format(', '.join('\''+c+'\'' for c in codes))
+    sql=sql+' and date>? and date<?'
+    print(sql)
+    return query_db(sql,[startDate,endDate])
+
+def get_db():
+    db = sqlite3.connect(DATABASE)
+    return db
+
+def execute(query,args=()):
+    conn=get_db()
+    cur=conn.cursor()
+    cur.execute(query,args)
+    conn.commit()
+
+
+def setPRAGMA(RRAGMA="ON"):
+    conn=get_db()
+    cur=conn.cursor()
+    if RRAGMA=="OFF":
+        cur.execute("PRAGMA synchronous = OFF")
+    else:
+        cur.execute("PRAGMA synchronous = ON")
+
+def query_db(query, args=(), one=False):
+    cur=get_db().cursor()
+    cur.execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
+
+
+
+#saveOrUpdate('002230',88,'2013-12-10')
+#saveOrUpdate('002232',88,'2014-12-10')
+#saveOrUpdate('002233',88,'2015-12-10')
+#saveOrUpdate('002231',88,'2016-12-10')
+#print(select(['002230','002231'],'2014-12-01','2016-12-18'))
+
+@time_me()
+def test():
+    today=datetime.today()
+    n=10
+    conn=get_db()
+    cur=conn.cursor()
+    cur.execute("PRAGMA synchronous = OFF")
+    #setPRAGMA("OFF")
+
+    for i in range(1,20):
+
+        code=str(n+i)
+        date=(today-timedelta(i)).strftime("%Y-%m-%d")
+        price=i
+        #saveOrUpdate(code,price,date)
+        cur.execute('insert into history(code,price,date) values (?,?,?)',[code,price,date])
+        conn.commit()
+        print(i)
+
+
+
+test()
+
+
+
+
+
+
+
