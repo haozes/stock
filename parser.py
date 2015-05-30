@@ -19,9 +19,12 @@ def getResult(codeArr):
 
 
 def fetchFromTushare(code):
+    print(code)
     if ApplicationCache.hasCacheStockInfo==False:
+        print('no cash')
         ret=ts.get_stock_basics()
         ApplicationCache.stock_basic=ret
+        ApplicationCache.hasCacheStockInfo=True
         for row in ret.iterrows():
             if not ApplicationCache.stockDict.has_key(row[0]):
                 ApplicationCache.stockDict[row[0]]=row[1]['name']
@@ -80,21 +83,21 @@ def parserResult(str):
 def getHist(codes,startDate,endDate):
     datesArr=[]
     series=[]
+    print(ApplicationCache.stockDict.has_key('002230'),ApplicationCache.stockDict['002230'])
     for code in codes:
-        item={'name':code,'data':[]}
+        haskey=ApplicationCache.stockDict.has_key(code)
+        name=  ApplicationCache.stockDict[code] if haskey else code
+        item={'name':name+' '+code,'data':[]}
         ret=ts.get_hist_data(str(code),start=startDate,end=endDate)
         for row in ret.iterrows():
             if row[0] not in datesArr:
-                if ApplicationCache.stockDict.has_key(row[0]):
-                    datesArr.append(ApplicationCache.stockDict[row[0]+' '+row[0]])
-                else:
                     datesArr.append(row[0])
             item['data'].append(row[1]['close'])
         series.append(item)
     return (datesArr,series)
 
-
+'''
 if __name__ == '__main__':
     ret=getResult(['002230','002736'])
     print(ret)
-
+'''

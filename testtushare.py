@@ -16,7 +16,21 @@ def getHist(codes,startDate,endDate):
         series.append(item)
     return (datesArr,series)
 
-#ret=getHist(['002230','002690'],'2015-05-20','2015-05-26')
+#ret=getHist(['002230'],'2015-05-20','2015-05-26')
+ret=ts.get_hist_data('002230','2015-05-20','2015-05-26')
+
+for row in ret.iterrows():
+    print(row[0],row[1]['close'])
+
+info=ts.get_stock_basics()
+for item in info.iterrows():
+    code=item[0]
+    hist=ts.get_hist_data(code,'2014-01-01','2015-05-31')
+    for row in hist.iterrows():
+        print(code,row[0],row[1]['close'])
+
+
+'''
 ret=ts.get_stock_basics()
 #print(ret[ret.name=='科大讯飞'])
 stockDict={}
@@ -25,4 +39,4 @@ for row in ret.iterrows():
         stockDict[row[0]]=row[1]['name']
 
 print(stockDict['002230'])
-
+'''

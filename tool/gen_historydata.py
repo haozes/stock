@@ -6,7 +6,7 @@ from datetime import *
 import time,functools
 import tushare as ts
 
-DATABASE = 'stock.db'
+DATABASE = '../stock.db'
 
 
 def time_me(info="used"):
@@ -55,14 +55,6 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
-
-
-#saveOrUpdate('002230',88,'2013-12-10')
-#saveOrUpdate('002232',88,'2014-12-10')
-#saveOrUpdate('002233',88,'2015-12-10')
-#saveOrUpdate('002231',88,'2016-12-10')
-#print(select(['002230','002231'],'2014-12-01','2016-12-18'))
-
 @time_me()
 def insertHistory():
     today=datetime.today()
@@ -86,10 +78,3 @@ def insertHistory():
 
 
 insertHistory()
-
-
-
-
-
-
-

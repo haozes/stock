@@ -28,7 +28,7 @@
         #loading-indicator {
           position: fixed;
           left: 50%;
-          top: 50%;
+          top: 100px;
         }
     </style>
   </head>
@@ -45,7 +45,7 @@
         <!-- left-->
         <div class="span9">
           <div id="chart_jll" style="min-width: 300px; height: 400px; margin: 0 auto"></div>
-          <div id="chart_price" style="min-width: 300px; height: 600px; margin: 0 auto"></div>
+          <div id="chart_price" style="min-width: 300px; min-height: 700px; margin: 0 auto"></div>
           <div>
             <div class="control-group">
               <label class="control-label" for="inputStartDate">开始日期</label>
@@ -168,6 +168,14 @@
                      text: '收盘价趋势',
                      x: -20
                  },
+                 	plotOptions: {
+                    series: {
+                        marker: {
+                            radius: 1,  //曲线点半径，默认是4，设为0时隐藏点
+                            symbol: 'diamond' //曲线点类型："circle", "square", "diamond", "triangle","triangle-down"，默认是"circle"
+                        }
+                    }
+                },
                  xAxis: {
                      categories: xAxisData
                  },
@@ -243,7 +251,8 @@
                 var plate=$(ele).text();
                 var arr=gPlate[plate];
                 fetchPEData(arr);
-                //fetchPriceData(arr,start,end);
+                fetchPriceData(arr,start,end);
+                $('#inputTxt').val(arr.join(','));
             }
   
             function loadPlate(){
@@ -280,7 +289,7 @@
                   
                  end=$('#inputEndDate').val()
                  start=$('#inputStartDate').val()
-                 //fetchPriceData(arr,start,end);
+                 fetchPriceData(arr,start,end);
                    
               });
                      //var stocks={"arr":['600816','600705','601336','000666','600291','600643','601628','601628','601601','601601','601318','600635','000563','600783','000415','601336']};

@@ -19,7 +19,7 @@ def main():
 @app.route('/get',methods=['POST'])
 def get():
     stocks=request.json['arr']
-    print(stocks)
+
     arr=[]
     for item in stocks:
         str=item.decode('gbk').encode('utf-8')
@@ -31,7 +31,6 @@ def get():
 #            arr.append('sz'+str)
 
     ret=parser.getResult(arr)
-    #ret=parser.getResult(['sh600816','sh600705','sh601336','sz000666','sh600291','sh600643','sh601628','sh601628','sh601601','sh601601','sh601318','sh600635','sz000563','sh600783','sh000415','sz601336'])
     return jsonify(results=ret)
 
 
