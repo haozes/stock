@@ -25,7 +25,7 @@ def saveOrUpdate(code,price,date):
 def select(codes,startDate,endDate):
     sql='select * from history where code in ({0})'.format(', '.join('\''+c+'\'' for c in codes))
     sql=sql+' and date>? and date<?'
-    print(sql)
+    #print(sql)
     return query_db(sql,[startDate,endDate])
 
 def get_db():
@@ -61,7 +61,7 @@ def query_db(query, args=(), one=False):
 #saveOrUpdate('002232',88,'2014-12-10')
 #saveOrUpdate('002233',88,'2015-12-10')
 #saveOrUpdate('002231',88,'2016-12-10')
-#print(select(['002230','002231'],'2014-12-01','2016-12-18'))
+print(select(['002230','002231'],'2014-12-01','2016-12-18'))
 
 @time_me()
 def insertHistory():
@@ -85,7 +85,7 @@ def insertHistory():
             print(code,date,price)
 
 
-insertHistory()
+#insertHistory()
 
 
 

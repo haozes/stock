@@ -3,6 +3,10 @@
 import urllib2
 import random,json
 import tushare as ts
+import histprovider
+
+from itertools import groupby
+from operator import itemgetter
 
 
 class ApplicationCache:
@@ -80,21 +84,50 @@ def parserResult(str):
     return [company+' '+arr[2],arr[39],arr[46]]
 
 
-def getHist(codes,startDate,endDate):
+def _getHistOnline(code,startDate,endDate):
     datesArr=[]
     series=[]
-    print(ApplicationCache.stockDict.has_key('002230'),ApplicationCache.stockDict['002230'])
+
     for code in codes:
         haskey=ApplicationCache.stockDict.has_key(code)
         name=  ApplicationCache.stockDict[code] if haskey else code
         item={'name':name+' '+code,'data':[]}
+
         ret=ts.get_hist_data(str(code),start=startDate,end=endDate)
         for row in ret.iterrows():
             if row[0] not in datesArr:
                     datesArr.append(row[0])
             item['data'].append(row[1]['close'])
+
         series.append(item)
     return (datesArr,series)
+
+
+def _getHistFromDB(codes,startDate,endDate):
+    datesArr=[]
+    series=[]
+
+    rows=histprovider.select(codes,startDate,endDate)
+
+    rows=sorted(rows,key=itemgetter(0))
+    for code,lst in groupby(rows,lambda k : k[0]):
+        haskey=ApplicationCache.stockDict.has_key(code)
+        name=  ApplicationCache.stockDict[code] if haskey else code
+        item={'name':name+' '+code,'data':[]}
+        for row in lst:
+            item['data'].append(row[1])
+        series.append(item)
+
+    rowofDate=sorted(rows,key=itemgetter(2))
+    for date,lst in groupby(rowofDate,lambda  k: k[2]):
+        if date not in datesArr:
+                    datesArr.append(date)
+
+    return (datesArr,series)
+
+
+def getHist(codes,startDate,endDate):
+    return _getHistFromDB(codes,startDate,endDate)
 
 '''
 if __name__ == '__main__':
