@@ -64,9 +64,9 @@ def insertHistory():
     cur.execute("PRAGMA synchronous = OFF")
 
     info=ts.get_stock_basics()
-    for item in info.iterrows()
+    for item in info.iterrows():
         code=item[0]
-        hist=ts.get_hist_data(code,'2014-01-01','2015-05-31')
+        hist=ts.get_hist_data(code,'2015-05-31','2015-06-02')
         for row in hist.iterrows():
 
             date=row[0]

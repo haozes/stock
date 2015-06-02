@@ -14,7 +14,7 @@ def gen_data():
 	json.dump(arr,output)
 
 def gen_cxt():
-	gen_data()
+    gen_data()
     cxt={}
     num=0
     with open('data.json') as data_file:

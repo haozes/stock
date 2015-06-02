@@ -361,12 +361,12 @@
               loadPlate();
               $('#btnSubmit').click(function () {
                 var str=$('#inputTxt').val();
-                var arr=str.split(',');
-                if(arr.length>0)
-                  fetchPEData(arr);
+                var codes=str.split(',');
+                if(codes.length>0)
+                  fetchPEData(codes);
                   
-                 var arr=getStartEndDate();
-                 fetchPriceData(arr,arr[0],arr[1]);
+                 var datearr=getStartEndDate();
+                 fetchPriceData(codes,datearr[0],datearr[1]);
                    
               });
               
