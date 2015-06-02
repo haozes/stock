@@ -79,7 +79,13 @@
             <div class="control-group">
               <label class="control-label" for="inputTxt">输入股票代码用英文逗号隔开</label>
               <textarea id='inputTxt' class="form-control" cols="60" rows="4" style="min-width:400px"></textarea>
-              <input type="button" class="btn btn-default" id="btnSubmit" value="提交自选股" />
+              <input type="button" class="btn btn-default" id="btnSubmit" value="分析自选股" />
+            </div>
+            
+            <div class="control-group">
+              <label class="control-label" for="inputCode">输入股票代码查询所属板块与概念</label>
+              <textarea id='inputCode' class="form-control" cols="60" rows="4" style="min-width:400px"></textarea>
+              <input type="button" class="btn btn-default" id="btnPlateCheck" value="查询" />
             </div>
             
           </div>
@@ -87,11 +93,6 @@
       </div>
     </div>
     <script>
-      /////
-          //var start='2015-05-02';
-          //var end='2015-05-26';
-       /////
-       
          // 对Date的扩展，将 Date 转化为指定格式的String
         // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符， 
         // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) 
@@ -316,6 +317,28 @@
                 var start=$('#inputStartDate').val();
                 return [start,end];
             }
+            
+            function getPlate(code) {
+                for(var item in gPlate){
+                  var arr=gPlate[item];
+                  if($.inArray(code,arr)>=0)
+                    return item;
+                }
+                return '';
+            }
+            
+            function getConcept(code) {
+              var dst=[];
+              for (var key in gConcept) {
+                  var arr=gConcept[key];
+                  for (var index = 0; index < arr.length; index++) {
+                    var tuple = arr[index];
+                    if(tuple[0]==code)
+                      dst.push(key);
+                  }
+              }
+              return dst;
+            }
   
             $(function () {
                var tmp=new Date();
@@ -346,7 +369,14 @@
                  fetchPriceData(arr,arr[0],arr[1]);
                    
               });
-                     //var stocks={"arr":['600816','600705','601336','000666','600291','600643','601628','601628','601601','601601','601318','600635','000563','600783','000415','601336']};
+              
+              $('#btnPlateCheck').click(function () {
+                  var code=$('#inputCode').val();
+                  var plate=getPlate(code);
+                  var concept=getConcept(code);
+                  var str=code +" 所属行业："+plate+' 概念: '+concept.join(',');
+                  BootstrapDialog.alert(str);
+              });
           });
     </script>
     
