@@ -61,7 +61,7 @@ def query_db(query, args=(), one=False):
 #saveOrUpdate('002232',88,'2014-12-10')
 #saveOrUpdate('002233',88,'2015-12-10')
 #saveOrUpdate('002231',88,'2016-12-10')
-print(select(['002230','002231'],'2014-12-01','2016-12-18'))
+#print(select(['002230','002231'],'2015-05-22','2015-05-31'))
 
 @time_me()
 def insertHistory():

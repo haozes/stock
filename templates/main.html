@@ -36,6 +36,25 @@
   <body>
     <img src="/img/loading.gif" id="loading-indicator" style="display:none" />
     <div class="container">
+      
+      <div class="navbar">
+      <div class="navbar-inner">
+          <div class="container">  
+              <div class="nav-collapse">
+                  <ul class="nav" id="nav">
+                      <li>
+                          <a href="/">根据行业分类</a>
+                      </li>
+                      <li>
+                          <a href="#" onclick=loadConcept()>根据概率分类</a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+
+      <!--nav end -->
       <div class="row">
         <div class="span3">
           <div class="well" style="padding: 8px 0;">
@@ -69,8 +88,8 @@
     </div>
     <script>
       /////
-          var start='2015-05-02';
-          var end='2015-05-26';
+          //var start='2015-05-02';
+          //var end='2015-05-26';
        /////
        
          // 对Date的扩展，将 Date 转化为指定格式的String
@@ -219,6 +238,9 @@
                                  var tmp=[element[0],(element[2]/element[1])*100];
                                  list.push(tmp);
                                 }
+                                else{
+                                  list.push([element[0],0]);
+                                }
                               }
                             }, this);
                           }
@@ -251,15 +273,48 @@
                 var plate=$(ele).text();
                 var arr=gPlate[plate];
                 fetchPEData(arr);
-                fetchPriceData(arr,start,end);
+                var d=getStartEndDate();
+                fetchPriceData(arr,d[0],d[1]);
                 $('#inputTxt').val(arr.join(','));
+            }
+            
+            function onConceptClick(ele) {
+                var cxpt=$(ele).text();
+                var tmp=gConcept[cxpt];
+                var arr=[];
+                if(tmp){
+                  for (var index = 0; index < tmp.length; index++) {
+                    arr.push(tmp[index][0]);
+                  }
+                  fetchPEData(arr);
+                  var d=getStartEndDate();
+                  fetchPriceData(arr,d[0],d[1]);
+                  $('#inputTxt').val(arr.join(','));         
+                }
             }
   
             function loadPlate(){
                   var plateEle=$('#plate');
+                    $("#plate").empty();
                   for (var plate in gPlate) {
                       $("#plate").append('<li><a href="#" onclick=onPlateClick(this)><span class="tab">'+plate+'</span></a></li>');
                   }
+            }
+            
+            function loadConcept() {
+                  var plateEle=$('#plate');
+                  $("#plate").empty();
+                  
+                  for(var c in gConcept){
+                       $("#plate").append('<li><a href="#" onclick=onConceptClick(this)><span class="tab">'+c+'</span></a></li>');
+                  }
+                                
+            }
+            
+            function getStartEndDate() {
+                var end=$('#inputEndDate').val();
+                var start=$('#inputStartDate').val();
+                return [start,end];
             }
   
             $(function () {
@@ -267,7 +322,7 @@
               tmp.setDate(new Date().getDate()-30);
               var end=new Date().Format("yyyy-MM-dd");
               
-              start= tmp.Format("yyyy-MM-dd");
+              var start= tmp.Format("yyyy-MM-dd");
               
               var inputStartDate=$('#inputStartDate').datepicker({
                 format: 'yyyy-mm-dd'
@@ -287,14 +342,14 @@
                 if(arr.length>0)
                   fetchPEData(arr);
                   
-                 end=$('#inputEndDate').val()
-                 start=$('#inputStartDate').val()
-                 fetchPriceData(arr,start,end);
+                 var arr=getStartEndDate();
+                 fetchPriceData(arr,arr[0],arr[1]);
                    
               });
                      //var stocks={"arr":['600816','600705','601336','000666','600291','600643','601628','601628','601601','601601','601318','600635','000563','600783','000415','601336']};
           });
     </script>
+    
   </body>
-
+  <script src="./js/concept.js"></script>
 </html>

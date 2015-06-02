@@ -33,6 +33,8 @@ def fetchFromTushare(code):
             if not ApplicationCache.stockDict.has_key(row[0]):
                 ApplicationCache.stockDict[row[0]]=row[1]['name']
     for row in ApplicationCache.stock_basic.iterrows():
+        if row[0]=='000762':
+            print row
         if row[0]==code:
             return [row[0]+' '+row[1]['name'],row[1]['pe'],row[1]['pb']]
     return []
