@@ -28,7 +28,7 @@
         #loading-indicator {
           position: fixed;
           left: 50%;
-          top: 100px;
+          top: 10%;
         }
     </style>
   </head>
@@ -46,7 +46,7 @@
                           <a href="/">根据行业分类</a>
                       </li>
                       <li>
-                          <a href="#" onclick=loadConcept()>根据概率分类</a>
+                          <a href="#" onclick=loadConcept()>根据概念分类</a>
                       </li>
                   </ul>
               </div>
@@ -65,6 +65,10 @@
         <div class="span9">
           <div id="chart_jll" style="min-width: 300px; height: 400px; margin: 0 auto"></div>
           <div id="chart_price" style="min-width: 300px; min-height: 700px; margin: 0 auto"></div>
+           <!-- Button trigger modal -->
+          <button type="button" id="btnShowFullImg" class="btn btn-primary btn-lg" data-toggle="modal" >
+            显示大图
+          </button>
           <div>
             <div class="control-group">
               <label class="control-label" for="inputStartDate">开始日期</label>
@@ -91,6 +95,21 @@
           </div>
         </div>
       </div>
+      
+    <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+             <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+       
+      </div>
+        <div id='modal-body'>
+          <div id='full_price_chart' style="width:90%;height:100%; margin: 0 auto"></div>
+      </div>
+        </div>
+      </div>
+    </div>
+
     </div>
     <script>
          // 对Date的扩展，将 Date 转化为指定格式的String
@@ -177,9 +196,11 @@
               $('#chart_jll').highcharts(opt);
               //
             }
+            
+         var gPriceOption=null;
   
          function fillPriceData(xAxisData,yData){
-             $('#chart_price').highcharts({
+            gPriceOption={
                  title: {
                      text: '近1月收盘价趋势分析',
                      x: -20 //center
@@ -219,7 +240,8 @@
                      borderWidth: 0
                  },
                  series: yData
-             });
+             };
+             $('#chart_price').highcharts(gPriceOption);
          }
   
             function fetchPEData(arr) {
@@ -234,14 +256,12 @@
                           var obj=msg;
                           if(obj && obj.results){
                             obj.results.forEach(function(element) {
-                              if(element.length>2){
+                              if(element.length>1){
                                 if(element[1]!=0){
-                                 var tmp=[element[0],(element[2]/element[1])*100];
+                                 var tmp=[element[0],element[1]*100];
                                  list.push(tmp);
                                 }
-                                else{
-                                  list.push([element[0],0]);
-                                }
+                               
                               }
                             }, this);
                           }
@@ -342,7 +362,7 @@
   
             $(function () {
                var tmp=new Date();
-              tmp.setDate(new Date().getDate()-30);
+              tmp.setDate(new Date().getDate()-60);
               var end=new Date().Format("yyyy-MM-dd");
               
               var start= tmp.Format("yyyy-MM-dd");
@@ -376,6 +396,14 @@
                   var concept=getConcept(code);
                   var str=code +" 所属行业："+plate+' 概念: '+concept.join(',');
                   BootstrapDialog.alert(str);
+              });
+              
+              $('#btnShowFullImg').click(function () {
+                if(gPriceOption){
+                  $('#full_price_chart').highcharts(gPriceOption);
+                  $('#myModal').modal('toggle');
+                }
+                
               });
           });
     </script>
