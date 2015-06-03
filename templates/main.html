@@ -69,6 +69,10 @@
           <button type="button" id="btnShowFullImg" class="btn btn-primary btn-lg" data-toggle="modal" >
             显示大图
           </button>
+          <button type="button" id="btnSelectAll" class="btn btn-primary btn-lg" data-toggle="modal" >
+            全选/反选
+          </button>
+          <div id="chkList"></div>
           <div>
             <div class="control-group">
               <label class="control-label" for="inputStartDate">开始日期</label>
@@ -80,6 +84,7 @@
               <div class="controls">
                 <input type="text" class="input-xlarge" id="inputEndDate" />*</div>
             </div>
+            
             <div class="control-group">
               <label class="control-label" for="inputTxt">输入股票代码用英文逗号隔开</label>
               <textarea id='inputTxt' class="form-control" cols="60" rows="4" style="min-width:400px"></textarea>
@@ -242,6 +247,7 @@
                  series: yData
              };
              $('#chart_price').highcharts(gPriceOption);
+             addSeriesChkbx();
          }
   
             function fetchPEData(arr) {
@@ -359,6 +365,50 @@
               }
               return dst;
             }
+            
+            function showSeriesByNames(names){
+                 var chart=$('#chart_price').highcharts();
+                 var series=chart.series;
+                 series.forEach(function (c) {
+                   var name =c.name;
+                   var s=$(c);
+                   if(names.indexOf(name)>=0){
+                      c.show();
+                   }
+                 });
+            }
+            
+            function hideSeriesByNames(names){
+                 var chart=$('#chart_price').highcharts();
+                 var series=chart.series;
+                 series.forEach(function (c) {
+                   var name =c.name;
+                   var s=$(c);
+                   if(names.indexOf(name)>=0){
+                      c.hide();
+                   }
+                 });
+            }
+            
+            function addSeriesChkbx() {
+                 $('#chkList').empty();
+                 var chart=$('#chart_price').highcharts();
+                 var series=chart.series;
+                 series.forEach(function (c) {
+                   var name =c.name;
+                   var chk=$("<span>"+name+": <input type='checkbox' value='"+name+"'  checked=true/></span> ");
+                    $('#chkList').append(chk);
+                    chk.find('input[type=checkbox]:first').on('click',function () {
+                      var ischked=$(this).is(':checked');
+                      if(ischked)
+                        showSeriesByNames([name]);
+                      else
+                        hideSeriesByNames([name]);
+                    });
+                 });
+                                  
+            }
+            
   
             $(function () {
                var tmp=new Date();
@@ -403,6 +453,28 @@
                   $('#full_price_chart').highcharts(gPriceOption);
                   $('#myModal').modal('toggle');
                 }
+                
+              });
+              
+              $('#btnSelectAll').click(function () {
+                 var isselected=$('#chkList').find('input[type=checkbox]:first').is(':checked');
+                 
+                 var chart=$('#chart_price').highcharts();
+                 var series=chart.series;
+                 series.forEach(function (c) {
+                   if(isselected){
+                      c.hide();
+                      $('#chkList').find('input[type=checkbox]').each(function(){
+                        this.checked=false;
+                      });
+                   }
+                    else{
+                      c.show();
+                      $('#chkList').find('input[type=checkbox]').each(function(){
+                        this.checked=true;
+                      });
+                    }
+                 });
                 
               });
           });
