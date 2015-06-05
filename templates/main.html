@@ -109,7 +109,7 @@
        
       </div>
         <div id='modal-body'>
-          <div id='full_price_chart' style="width:90%;height:100%; margin: 0 auto"></div>
+          <div id='full_price_chart' style="width:90%;height:100%;; margin: 0 auto"></div>
       </div>
         </div>
       </div>
@@ -251,6 +251,8 @@
          }
   
             function fetchPEData(arr) {
+              fetchPEFromCache(arr);
+              /* realtime data
               var stocks={"arr":arr};
               $.ajax({
                   type : "POST",
@@ -273,7 +275,24 @@
                           }
                           fillPEdata(list);
                   }
+              });*/
+              
+            }
+            
+            function fetchPEFromCache(arr) {
+              var list=[];
+              arr.forEach(function (ele) {
+                var obj=gRatio[ele];
+                if(obj){
+                  list.push([obj[0]+' '+ele,obj[1]]);
+                }
+              })
+              
+              list.sort(function (a,b) {
+                return b[1]-a[1];
               });
+              
+              fillPEdata(list);
             }
   
             function fetchPriceData(arr,startDate,endDate){
@@ -482,4 +501,5 @@
     
   </body>
   <script src="./js/concept.js"></script>
+  <script src="./js/ratio.js"></script>
 </html>
