@@ -247,7 +247,7 @@
                  series: yData
              };
              $('#chart_price').highcharts(gPriceOption);
-             addSeriesChkbx();
+         
          }
   
             function fetchPEData(arr) {
@@ -277,6 +277,19 @@
                   }
               });*/
               
+            }
+            function sortArrByRatio(arr) {
+                arr.sort(function (a,b) {
+                  var obj1=gRatio[a];
+                  var obj2=gRatio[b];
+                  if(obj1 && obj2){
+                    return obj2[1]-obj1[1];
+                  }
+                  else{
+                    return 0;
+                  }
+                });
+                return arr;
             }
             
             function fetchPEFromCache(arr) {
@@ -309,6 +322,7 @@
                               var axisData=obj.results[0];
                               var yData=obj.results[1];
                               fillPriceData(axisData,yData);
+                              addSeriesChkbx(arr);
                         }
                     }
                 });
@@ -318,6 +332,8 @@
             function onPlateClick(ele){
                 var plate=$(ele).text();
                 var arr=gPlate[plate];
+                
+                arr=sortArrByRatio(arr);
                 fetchPEData(arr);
                 var d=getStartEndDate();
                 fetchPriceData(arr,d[0],d[1]);
@@ -409,12 +425,11 @@
                  });
             }
             
-            function addSeriesChkbx() {
+            function addSeriesChkbx(arr) {
                  $('#chkList').empty();
-                 var chart=$('#chart_price').highcharts();
-                 var series=chart.series;
-                 series.forEach(function (c) {
-                   var name =c.name;
+ 
+                 arr.forEach(function (code) {
+                   var name =gRatio[code][0]+' '+code;
                    var chk=$("<span>"+name+": <input type='checkbox' value='"+name+"'  checked=true/></span> ");
                     $('#chkList').append(chk);
                     chk.find('input[type=checkbox]:first').on('click',function () {
@@ -424,8 +439,7 @@
                       else
                         hideSeriesByNames([name]);
                     });
-                 });
-                                  
+                 });                 
             }
             
   
@@ -482,13 +496,13 @@
                  var series=chart.series;
                  series.forEach(function (c) {
                    if(isselected){
-                      c.hide();
+                      c.setVisible(false,false);
                       $('#chkList').find('input[type=checkbox]').each(function(){
                         this.checked=false;
                       });
                    }
                     else{
-                      c.show();
+                      c.setVisible(true,false);
                       $('#chkList').find('input[type=checkbox]').each(function(){
                         this.checked=true;
                       });

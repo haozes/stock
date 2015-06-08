@@ -66,7 +66,7 @@ def insertHistory():
     info=ts.get_stock_basics()
     for item in info.iterrows():
         code=item[0]
-        hist=ts.get_hist_data(code,'2015-05-31','2015-06-02')
+        hist=ts.get_hist_data(code,'2015-06-03','2015-06-06')
         for row in hist.iterrows():
 
             date=row[0]
